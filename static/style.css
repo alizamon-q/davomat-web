@@ -4,3 +4,5 @@
 .badge.pending{background:#fff3cd;color:#7a5b00}.decision-form{display:flex;gap:6px;align-items:center;min-width:360px}.decision-form input{min-width:160px;padding:8px}.danger-btn{background:#dc3545!important}.kpis{grid-template-columns:repeat(5,minmax(120px,1fr))}@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.decision-form{min-width:300px;flex-wrap:wrap}}
 
 .login-logo{width:160px;max-width:42vw;height:auto;display:block;margin:0 auto 18px}.login-card{border:1px solid #eef1f6}.login-card h2{margin-top:0;margin-bottom:20px}
+
+.login-card .flash{margin:10px 0 16px;text-align:left;font-size:14px;font-weight:600}.login-card .flash.danger{background:#ffe9e9;color:#9d1c1c;border:1px solid #ffc7c7}.login-card .flash.success{background:#e7f8f2;color:#13795b;border:1px solid #bcebdc}
