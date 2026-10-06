@@ -1,0 +1,18 @@
+DAVOMAT WEB-DASTURNI RENDER GA JOYLASH
+
+1. GitHub da yangi repository yarating, masalan: davomat-nazorati.
+2. Ushbu papkadagi barcha fayllarni repository ga yuklang.
+3. render.com ga kiring -> New -> Web Service.
+4. GitHub repository ni ulang.
+5. Build Command: pip install -r requirements.txt
+6. Start Command: gunicorn app:app --bind 0.0.0.0:$PORT
+7. Environment variables:
+   GOOGLE_SHEETS_WEBHOOK = sizdagi Apps Script /exec URL
+   SECRET_KEY = uzun tasodifiy maxfiy satr
+   OFFICE_LAT = ishxona latitude
+   OFFICE_LON = ishxona longitude
+   OFFICE_RADIUS_METERS = 250
+8. Agar SQLite ma'lumotlari server qayta deploy bo'lganda saqlanishi kerak bo'lsa, Render Persistent Disk qo'shing va DATABASE_PATH=/var/data/davomat.db qilib belgilang.
+9. Deploy tugagach Render sizga https://...onrender.com manzil beradi. Shu URL telefonlarda ham ochiladi va HTTPS sabab GPS ishlaydi.
+
+MUHIM: dastlabki admin: admin / admin123. Internetga chiqqach parolni albatta almashtirish kerak.

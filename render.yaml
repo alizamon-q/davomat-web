@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: davomat-nazorati
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GOOGLE_SHEETS_WEBHOOK
+        sync: false
+      - key: OFFICE_LAT
+        sync: false
+      - key: OFFICE_LON
+        sync: false
+      - key: OFFICE_RADIUS_METERS
+        value: 250

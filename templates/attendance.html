@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Davomat</h1>
+<div class="card">
+  <h3>Davomatingizni belgilang!</h3>
+  <form method="post" id="attendanceForm">
+    <label class="check"><input type="checkbox" id="officeBox"> Belgilangan ish joyidaman</label>
+    <label>Izoh kiriting:</label>
+    <textarea name="note" id="note" rows="5" placeholder="Masalan: Ishxonadaman yoki Oqdaryo tumanidagi obyektdaman" required></textarea>
+    <input type="hidden" name="latitude" id="lat">
+    <input type="hidden" name="longitude" id="lon">
+    <input type="hidden" name="accuracy" id="accuracy">
+    <div id="gpsStatus" class="gps gps-hidden"></div>
+    <button type="submit" id="confirmAttendance">✓ MA’LUMOTNI TASDIQLAYMAN</button>
+  </form>
+</div>
+{% endblock %}

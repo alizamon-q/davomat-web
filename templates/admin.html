@@ -1,0 +1,26 @@
+{% extends 'base.html' %}{% block content %}
+<h1>Oylik davomat nazorati</h1>
+<form class="filter"><input type="month" name="month" value="{{month}}"><button>Ko‘rsatish</button><a class="btnlink" href="{{url_for('export_csv',month=month)}}">CSV yuklash</a></form>
+<div class="kpis">
+  <div><b>{{total}}</b><span>Jami xodim</span></div>
+  <div><b>{{no_submission}}</b><span>Umuman yubormagan</span></div>
+  <div><b>{{pending_records}}</b><span>Kutilayotgan yozuv</span></div>
+  <div><b>{{approved_records}}</b><span>Tasdiqlangan</span></div>
+  <div><b>{{rejected_records}}</b><span>Rad etilgan</span></div>
+</div>
+<div class="card"><h3>Xodimlar kesimida</h3><div class="table-wrap"><table><thead><tr><th>Xodim</th><th>Bo‘lim</th><th>Jami yuborgan</th><th>Kutilmoqda</th><th>Tasdiqlangan</th><th>Rad etilgan</th></tr></thead><tbody>{% for x in summary %}<tr><td>{{x.name}}</td><td>{{x.department}}</td><td>{{x.count}}</td><td>{{x.pending}}</td><td>{{x.approved}}</td><td>{{x.rejected}}</td></tr>{% endfor %}</tbody></table></div></div>
+<div class="card"><h3>Barcha yuborilgan ma’lumotlar</h3><div class="table-wrap"><table><thead><tr><th>Xodim</th><th>Izoh</th><th>Lokatsiya</th><th>Yuborgan sana</th><th>Tasdiqlangan vaqt</th><th>Holat</th><th>Admin izohi / amal</th></tr></thead><tbody>
+{% for r in records %}<tr>
+<td>{{r['full_name']}}</td><td>{{r['note']}}</td>
+<td><a target="_blank" href="https://maps.google.com/?q={{r['latitude']}},{{r['longitude']}}">{{'Ishxona yaqinida' if r['office_match'] else 'Xaritada ko‘rish'}}</a></td>
+<td>{{r['sent_at'].replace('T',' ')}}</td><td>{{r['confirmed_at'].replace('T',' ') if r['confirmed_at'] else '—'}}</td>
+<td><span class="badge {{'ok' if r['status']=='Tasdiqlandi' else ('late' if r['status']=='Rad etildi' else 'pending')}}">{{r['status']}}</span></td>
+<td>{% if r['status']=='Kutilmoqda' %}
+<form method="post" action="{{url_for('admin_attendance_decision',record_id=r['id'])}}" class="decision-form">
+<input type="hidden" name="month" value="{{month}}"><input name="admin_note" placeholder="Izoh (ixtiyoriy)">
+<button name="decision" value="approve">Tasdiqlash</button><button class="danger-btn" name="decision" value="reject">Rad etish</button>
+</form>
+{% else %}{{r['admin_note'] or '—'}}{% endif %}</td>
+</tr>{% else %}<tr><td colspan="7">Ma’lumot yo‘q.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Xodimlar</h1>
+
+<div class="card">
+  <h3>Yangi xodim qo‘shish</h3>
+  <form method="post" class="gridform">
+    <input type="hidden" name="action" value="add">
+    <input name="full_name" placeholder="F.I.Sh." required>
+    <input name="username" placeholder="Login" required>
+    <input name="password" placeholder="Boshlang‘ich parol" required>
+    <input name="department" placeholder="Bo‘lim">
+    <input name="position" placeholder="Lavozim">
+    <button>Qo‘shish</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Xodimlar ro‘yxati</h3>
+  <p style="margin-top:0;color:#667085">Ma’lumotni o‘zgartirib <b>Saqlash</b> ni bosing. Telefon almashtirilsa <b>Qurilmani almashtirish</b> ni bosing.</p>
+  <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>F.I.Sh.</th><th>Login</th><th>Bo‘lim</th><th>Lavozim</th><th>Yangi parol</th><th>Qurilma</th><th>Holat</th><th>Amallar</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for u in users %}
+        <tr style="{% if not u['active'] %}opacity:.6{% endif %}">
+          <form method="post">
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="user_id" value="{{u['id']}}">
+            <td><input name="full_name" value="{{u['full_name']}}" required style="min-width:220px"></td>
+            <td><input name="username" value="{{u['username']}}" required style="min-width:110px"></td>
+            <td><input name="department" value="{{u['department'] or ''}}" style="min-width:260px"></td>
+            <td><input name="position" value="{{u['position'] or ''}}" style="min-width:170px"></td>
+            <td><input name="password" type="password" placeholder="o‘zgarmasa bo‘sh" style="min-width:150px"></td>
+            <td>{{'Biriktirilgan' if u['device_hash'] else 'Biriktirilmagan'}}</td>
+            <td>{{'Faol' if u['active'] else 'Ishdan bo‘shagan'}}</td>
+            <td><button class="small">Saqlash</button></td>
+          </form>
+        </tr>
+        <tr style="{% if not u['active'] %}opacity:.6{% endif %}">
+          <td colspan="8" style="padding-top:0;border-top:0">
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <form method="post">
+                <input type="hidden" name="action" value="reset_device">
+                <input type="hidden" name="user_id" value="{{u['id']}}">
+                <button class="small" type="submit">Qurilmani almashtirish</button>
+              </form>
+              {% if u['active'] %}
+              <form method="post" onsubmit="return confirm('Xodimni ishdan bo‘shagan sifatida o‘chirasizmi? Eski davomat tarixi saqlanadi.')">
+                <input type="hidden" name="action" value="deactivate">
+                <input type="hidden" name="user_id" value="{{u['id']}}">
+                <button class="small" type="submit" style="background:#dc3545">Ishdan bo‘shatish / O‘chirish</button>
+              </form>
+              {% else %}
+              <form method="post">
+                <input type="hidden" name="action" value="activate">
+                <input type="hidden" name="user_id" value="{{u['id']}}">
+                <button class="small" type="submit">Qayta faollashtirish</button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
