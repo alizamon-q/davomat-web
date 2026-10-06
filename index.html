@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#315fca">
+  <meta name="description" content="Xodimlar davomatini GPS orqali nazorat qilish tizimi">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+  <title>Davomat nazorati</title>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+
+<section id="loginPage" class="login-page">
+  <form id="loginForm" class="login-card">
+    <img src="assets/logo.png" class="login-logo" alt="Inspeksiya logotipi">
+    <h1>Samarqand viloyati hududiy qurilish va uy-joy kommunal xo‘jaligi nazorati inspeksiyasi</h1>
+    <div id="loginError" class="alert danger hidden"></div>
+    <input id="username" autocomplete="username" placeholder="Login" required>
+    <input id="password" type="password" autocomplete="current-password" placeholder="Parol" required>
+    <button class="primary wide" type="submit">KIRISH</button>
+    <button id="installBtnLogin" class="ghost wide hidden" type="button">📲 DASTURNI O‘RNATISH</button>
+    <p class="hint">Har bir xodim akkaunti faqat bitta qurilmaga biriktiriladi.</p>
+  </form>
+</section>
+
+<div id="appShell" class="app-shell hidden">
+  <aside id="sidebar">
+    <div class="side-brand">
+      <img src="assets/logo.png" alt="">
+      <div>Davomat</div>
+    </div>
+    <nav id="employeeNav">
+      <button data-page="profile">👤 <span>Mening profilim</span></button>
+      <button data-page="attendance">✅ <span>Davomat yuborish</span></button>
+      <button data-page="myStats">📊 <span>Mening davomatim</span></button>
+    </nav>
+    <nav id="adminNav" class="hidden">
+      <button data-page="adminDashboard">📊 <span>Boshqaruv paneli</span></button>
+      <button data-page="users">👥 <span>Xodimlar</span></button>
+      <button data-page="pending">⏳ <span>Tasdiqlash kutilmoqda</span></button>
+      <button data-page="allAttendance">🗂️ <span>Barcha davomatlar</span></button>
+      <button data-page="monthly">📅 <span>Oylik hisobot</span></button>
+      <a id="sheetLink" target="_blank" rel="noopener">📗 <span>Google Sheet</span></a>
+      <button data-page="settings">⚙️ <span>Sozlamalar</span></button>
+    </nav>
+    <div class="side-bottom">
+      <button id="installBtn" class="hidden">📲 <span>O‘rnatish</span></button>
+      <button id="logoutBtn">↪ <span>Chiqish</span></button>
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <button id="menuBtn" class="menu-btn">☰</button>
+      <div id="currentUserName"></div>
+    </header>
+    <div id="content"></div>
+  </main>
+</div>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
