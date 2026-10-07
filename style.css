@@ -25,3 +25,8 @@ table{width:100%;border-collapse:collapse;background:#fff}th{background:var(--gr
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
 @media(max-width:900px){aside{width:78px}.side-brand div,aside span{display:none}.side-brand img{width:54px;height:54px}main{margin-left:78px;width:calc(100% - 78px)}.kpis{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-3,.form-row,.profile-card{grid-template-columns:1fr}}
 @media(max-width:600px){aside{transform:translateX(-100%);width:240px;transition:.2s}aside.open{transform:translateX(0)}aside span,.side-brand div{display:inline}.menu-btn{display:block}main{margin-left:0;width:100%}#content{padding:16px}header{padding:0 15px}.kpis{grid-template-columns:1fr 1fr}.login-card{padding:28px 22px}.page-title{font-size:25px}}
+
+#busyBar{position:fixed;left:0;top:0;height:3px;width:0;background:#20bf91;z-index:20000;opacity:0;transition:opacity .15s}
+#busyBar.show{opacity:1;animation:busyMove 1.05s ease-in-out infinite}
+@keyframes busyMove{0%{left:0;width:10%}50%{left:25%;width:55%}100%{left:90%;width:10%}}
+.soft-loading{color:#777;padding:14px 18px}
