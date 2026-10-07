@@ -48,6 +48,7 @@ function fmtDate(s){if(!s)return "—";const d=new Date(s);return isNaN(d)?s:d.t
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
 function badge(s){const c=s==="Tasdiqlandi"?"approved":s==="Rad etildi"?"rejected":"pending";return `<span class="badge ${c}">${esc(s)}</span>`}
 function monthVal(){return new Date().toISOString().slice(0,7)}
+function dateVal(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 
 async function bootstrap(){
   $("#sheetLink").href=C.SHEET_URL;
@@ -114,7 +115,7 @@ async function submitAttendance(){
     try{
       btn.textContent="Yuborilmoqda...";
       await api({action:"submitAttendance",token:token(),note,lat:pos.coords.latitude,lon:pos.coords.longitude,accuracy:Math.round(pos.coords.accuracy||0)});
-      cacheDrop("myStats:");cacheDrop("adminDashboard:");cacheDrop("attendance:");
+      cacheDrop("myStats:");cacheDrop("adminDashboard:");cacheDrop("attendance:");cacheDrop("dailyStatus:");
       toast("Ma’lumot yuborildi. Admin tasdig‘i kutilmoqda.");
       content.innerHTML=`<h1 class="page-title">Davomat yuborish</h1><div class="card"><div class="alert success"><b>Ma’lumot muvaffaqiyatli yuborildi.</b><br>Holat: Kutilmoqda. Admin tasdiqlagandan keyin “Mening davomatim” bo‘limida ko‘rinadi.</div><button id="sendAgain" class="success-btn">Yana ma’lumot yuborish</button> <button id="openStats" class="secondary">Mening davomatim</button></div>`;
       $("#sendAgain").onclick=renderAttendance;$("#openStats").onclick=()=>go("myStats");
@@ -132,15 +133,23 @@ async function renderMyStats(month=monthVal()){
   <div class="table-wrap"><table><thead><tr><th>№</th><th>Yuborilgan sana</th><th>Tasdiqlangan vaqt</th><th>Izoh</th><th>Holat</th><th>Admin izohi</th><th>Lokatsiya</th></tr></thead><tbody>${rows||'<tr><td colspan="7">Ma’lumot yo‘q.</td></tr>'}</tbody></table></div></div>`;
   $("#myShow").onclick=()=>renderMyStats($("#myMonth").value);
 }
-async function renderAdminDashboard(month=monthVal()){
-  const r=await cachedApi("adminDashboard:"+month,{action:"adminDashboard",token:token(),month},30000);
+async function renderAdminDashboard(month=monthVal(), day=dateVal()){
+  const [r,d] = await Promise.all([
+    cachedApi("adminDashboard:"+month,{action:"adminDashboard",token:token(),month},30000),
+    cachedApi("dailyStatus:"+day,{action:"dailyStatus",token:token(),date:day},15000)
+  ]);
+  const dailyRows=d.items.map(x=>`<tr><td>${x.no}</td><td>${esc(x.full_name)}</td><td>${esc(x.department)}</td><td>${esc(x.position||"")}</td><td>${x.sent?'<span class="badge approved">Yuborilgan</span>':'<span class="badge rejected">Yuborilmagan</span>'}</td><td>${x.sent?esc(x.first_time)+(x.count>1?' ('+x.count+' marta)':''):'—'}</td></tr>`).join("");
   content.innerHTML=`<h1 class="page-title">Boshqaruv paneli</h1>
-  <div class="toolbar"><input id="dashMonth" type="month" value="${month}"><button id="dashShow" class="success-btn">Ko‘rsatish</button></div>
-  <div class="kpis"><div class="kpi"><b>${r.total_users}</b><span>Faol xodim</span></div><div class="kpi"><b>${r.no_submission}</b><span>Umuman yubormagan</span></div><div class="kpi"><b>${r.pending}</b><span>Kutilmoqda</span></div><div class="kpi"><b>${r.approved}</b><span>Tasdiqlandi</span></div><div class="kpi"><b>${r.rejected}</b><span>Rad etildi</span></div></div>
-  <div class="card"><h3>Xodimlar kesimida</h3><div class="table-wrap"><table><thead><tr><th>Xodim</th><th>Bo‘lim</th><th>Yuborganlar</th><th>Tasdiqlangan</th><th>Rad etilgan</th><th>Kutilmoqda</th></tr></thead><tbody>
+  <div class="card daily-card"><div class="daily-head"><div><h3>Kunlik davomat</h3><div class="note">Tanlangan kun bo‘yicha kim yuborgan va kim yubormagan</div></div><div class="toolbar"><input id="dailyDate" type="date" value="${day}"><button id="dailyShow" class="success-btn">Ko‘rsatish</button></div></div>
+  <div class="daily-summary"><div><b>${d.total}</b><span>Jami xodim</span></div><div><b class="green-num">${d.sent_count}</b><span>Yuborgan</span></div><div><b class="red-num">${d.not_sent_count}</b><span>Yubormagan</span></div></div>
+  <div class="table-wrap"><table class="daily-table"><thead><tr><th>№</th><th>Xodim ism familiyasi</th><th>Bo‘lim</th><th>Lavozim</th><th>Holat</th><th>Yuborgan vaqt</th></tr></thead><tbody>${dailyRows||'<tr><td colspan="6">Xodim yo‘q.</td></tr>'}</tbody></table></div></div>
+  <div class="toolbar"><input id="dashMonth" type="month" value="${month}"><button id="dashShow" class="success-btn">Oylik ko‘rsatish</button></div>
+  <div class="kpis"><div class="kpi"><b>${r.total_users}</b><span>Faol xodim</span></div><div class="kpi"><b>${r.no_submission}</b><span>Oyda yubormagan</span></div><div class="kpi"><b>${r.pending}</b><span>Kutilmoqda</span></div><div class="kpi"><b>${r.approved}</b><span>Tasdiqlandi</span></div><div class="kpi"><b>${r.rejected}</b><span>Rad etildi</span></div></div>
+  <div class="card"><h3>Oylik xodimlar kesimida</h3><div class="table-wrap"><table><thead><tr><th>Xodim</th><th>Bo‘lim</th><th>Yuborganlar</th><th>Tasdiqlangan</th><th>Rad etilgan</th><th>Kutilmoqda</th></tr></thead><tbody>
   ${r.by_user.map(x=>`<tr><td>${esc(x.full_name)}</td><td>${esc(x.department)}</td><td>${x.total}</td><td>${x.approved}</td><td>${x.rejected}</td><td>${x.pending}</td></tr>`).join("")||'<tr><td colspan="6">Ma’lumot yo‘q</td></tr>'}
   </tbody></table></div></div>`;
-  $("#dashShow").onclick=()=>renderAdminDashboard($("#dashMonth").value);
+  $("#dailyShow").onclick=()=>{cacheDrop("dailyStatus:");renderAdminDashboard($("#dashMonth").value,$("#dailyDate").value)};
+  $("#dashShow").onclick=()=>renderAdminDashboard($("#dashMonth").value,$("#dailyDate").value);
 }
 async function renderUsers(){
   const r=await cachedApi("users",{action:"listUsers",token:token()},60000);
